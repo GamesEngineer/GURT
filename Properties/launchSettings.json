@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GURT": {
+      "commandName": "Project",
+      "commandLineArgs": "--input Scene.obj --output Image.png --width 1280 --height 720"
+    }
+  }
+}
