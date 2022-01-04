@@ -1,4 +1,5 @@
 ﻿//#define DBG_IMAGE
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Drawing;
@@ -8,10 +9,11 @@ namespace GURT
     public class RayTracer
     {
         public List<ISceneObject> sceneObjects = new List<ISceneObject>();
+        public List<ILight> lights = new List<ILight>();
 
         public void RenderImage(Camera camera, Image image)
         {
-            const float near = 1f;
+            float near = 1f / MathF.Tan(camera.fov * MathF.PI / 180f);
             float aspect = (float)image.width / (float)image.height;
             Vector2 size = new Vector2(image.width - 1, image.height - 1);
 
@@ -28,8 +30,7 @@ namespace GURT
                         Color c;
                         if (so.Hit(ray, out RayHit hit, out Material mat))
                         {
-                            c = mat.baseColor;
-                            // TODO - do lighting and material effects
+                            c = mat.Shade(hit, lights);
                         }
                         else
                         {
@@ -37,8 +38,6 @@ namespace GURT
                         }
 
 #if DBG_IMAGE
-                        //float red = (255.999f * (float)x / (float)image.width);
-                        //float green = (255.999f * (float)y / (float)image.height);
                         float red = 255.999f * (uvw.X + 0.5f);
                         float green = 255.999f * (uvw.Y + 0.5f);
                         c = Color.FromArgb((int)red, (int)green, 0);

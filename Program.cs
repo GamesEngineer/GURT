@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Drawing;
 
 namespace GURT
 {
@@ -12,8 +13,30 @@ namespace GURT
             var image = new Image(imageWidth, imageHeight);
             var camera = new Camera(Vector3.UnitZ * -5f, Vector3.Zero);
             var tracer = new RayTracer();
-            // TODO - remove test object
-            tracer.sceneObjects.Add(new Elipsoid { center = Vector3.Zero, radii = Vector3.One, material = new Material() });
+            // TODO - remove test objects and lights
+            tracer.sceneObjects.Add(new Elipsoid
+            {
+                center = Vector3.Zero,
+                radii = Vector3.One, 
+                material = new Material 
+                {
+                    baseColor = Color.Cyan,
+                    emissionColor = Color.Brown,
+                }
+            });
+            
+            tracer.sceneObjects.Add(new Elipsoid
+            {
+                center = Vector3.UnitY,
+                radii = Vector3.One * 0.5f,
+                material = new Material
+                {
+                    baseColor = Color.Cyan,
+                    emissionColor = Color.Brown,
+                }
+            });
+            
+            tracer.lights.Add(new PointLight { center = (Vector3.UnitX + Vector3.UnitY) * 5f, color = Color.White });
             tracer.RenderImage(camera, image);
             image.WriteToFile(imageFilename);
         }

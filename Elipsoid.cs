@@ -14,7 +14,7 @@ namespace GURT
         public bool Hit(Ray ray, out RayHit hit, out Material material)
         {
             hit = new RayHit();
-            material = new Material();
+            material = this.material;
             //bool okay = Matrix4x4.Decompose(transform, out Vector3 radii, out Quaternion rotation, out Vector3 center);
             //if (!okay) throw new InvalidOperationException();
 
@@ -33,15 +33,9 @@ namespace GURT
             }
 
             h = (float)Math.Sqrt(h);
-            hit.distance = (-b - h) / a;
+            hit.distance = (-b - h) / a; // TODO - handle ray origin starting inside elipsoid
             hit.point = ray.origin + ray.direction * hit.distance;
             hit.normal = Vector3.Normalize(hit.point - center);
-            material.baseColor = Color.Gray;
-            material.emissionColor = Color.Black;
-            material.indexOfRefraction = 1f;
-            material.metallicity = 0f;
-            material.roughness = 0f;
-            material.specularity = 0.8f;
 
             return true;
         }
