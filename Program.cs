@@ -18,10 +18,10 @@ namespace GURT
         }
 
         // Parsed arguments
-        static int imageWidth;
-        static int imageHeight;
-        static string imageFilename;
-        static string sceneFilename;
+        static int imageWidth = 1280;
+        static int imageHeight = 720;
+        static string imageFilename = "image.ppm";
+        static string sceneFilename = "scene.obj";
 
         private static void ParseArgs(string[] args)
         {
