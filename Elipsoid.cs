@@ -20,11 +20,11 @@ namespace GURT
 
             // Solve quadratic equation to find instersection of ray with elipsoid
             // https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
-            Vector3 ocn = ray.origin / radii;
-            Vector3 rdn = ray.direction / radii;
-            float a = Vector3.Dot(rdn, rdn);
-            float b = Vector3.Dot(ocn, rdn);
-            float c = Vector3.Dot(ocn, ocn);
+            Vector3 o = ray.origin / radii;
+            Vector3 d = ray.direction / radii;
+            float a = Vector3.Dot(d, d);
+            float b = Vector3.Dot(o, d);
+            float c = Vector3.Dot(o, o);
             float h = b * b - a * (c - 1f);
             if (h < 0.0)
             {
