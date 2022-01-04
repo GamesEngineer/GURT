@@ -10,9 +10,10 @@ namespace GURT
             Console.WriteLine("Hello World! I'm GURT. I trace rays to make pretty pictures.");
             ParseArgs(args);
             var image = new Image(imageWidth, imageHeight);
-            var camera = new Camera(Vector3.One * 5f, Vector3.Zero);
+            var camera = new Camera(Vector3.UnitZ * -5f, Vector3.Zero);
             var tracer = new RayTracer();
-            tracer.sceneObjects.Add(new Elipsoid { center = Vector3.Zero, radii = Vector3.One, material = new Material()  });
+            // TODO - remove test object
+            tracer.sceneObjects.Add(new Elipsoid { center = Vector3.Zero, radii = Vector3.One, material = new Material() });
             tracer.RenderImage(camera, image);
             image.WriteToFile(imageFilename);
         }

@@ -51,14 +51,14 @@ namespace GURT
                 {
                     writer.Write(fileHeader);
                     writer.Write(imageHeader);
-                    for (int y = height - 1; y >= 0; y--)
+                    for (int y = 0; y < height; y++)
                     {
                         for (int x = 0; x < width; x++)
                         {
                             Color c = pixels[y, x];
-                            writer.Write(c.R);
-                            writer.Write(c.G);
                             writer.Write(c.B);
+                            writer.Write(c.G);
+                            writer.Write(c.R);
                         }
                     }
                 }

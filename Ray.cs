@@ -7,7 +7,7 @@ namespace GURT
         public Vector3 origin;
         public Vector3 direction;
 
-        public static Ray FromLine(Vector3 start, Vector3 end)
+        public static Ray CreateFromLine(Vector3 start, Vector3 end)
         {
             return new Ray { origin = start, direction = Vector3.Normalize(end - start) };
         }
