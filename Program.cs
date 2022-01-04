@@ -9,7 +9,7 @@ namespace GURT
         {
             Console.WriteLine("Hello World! I'm GURT. I trace rays to make pretty pictures.");
             ParseArgs(args);
-            var image = new Image { width = imageWidth, height = imageHeight };
+            var image = new Image(imageWidth, imageHeight);
             var camera = new Camera(Vector3.One * 5f, Vector3.Zero);
             var tracer = new RayTracer();
             tracer.sceneObjects.Add(new Elipsoid { center = Vector3.Zero, radii = Vector3.One, material = new Material()  });
@@ -20,7 +20,7 @@ namespace GURT
         // Parsed arguments
         static int imageWidth = 1280;
         static int imageHeight = 720;
-        static string imageFilename = "image.ppm";
+        static string imageFilename = "image.bmp";
         static string sceneFilename = "scene.obj";
 
         private static void ParseArgs(string[] args)

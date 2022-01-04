@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using System.Drawing;
 
 namespace GURT
 {
@@ -17,14 +18,27 @@ namespace GURT
             Matrix4x4 xform = Matrix4x4.CreatePerspectiveFieldOfView(camera.fov * DEG2RAD, aspect, near, far);
             Vector2 size = new Vector2(image.width - 1, image.height - 1);
 
-            for (int v = 0; v < image.height; v++)
+            for (int y = 0; y < image.height; y++)
             {
-                for (int h = 0; h < image.width; h++)
+                for (int x = 0; x < image.width; x++)
                 {
-                    Vector3 uvw = new Vector3(h / size.X - 0.5f, v / size.Y - 0.5f, near);
+                    Vector3 uvw = new Vector3(x / size.X - 0.5f, y / size.Y - 0.5f, near);
                     uvw = Vector3.Transform(uvw, xform);
                     Vector3 screenPoint = camera.position + uvw;
                     var ray = Ray.FromLine(camera.position, screenPoint);
+                    foreach (var so in sceneObjects)
+                    {
+                        Color c; 
+                        if (so.Hit(ray, out RayHit hit, out Material mat))
+                        {
+                            c = mat.baseColor;
+                        }
+                        else
+                        {
+                            c = Color.Black;
+                        }
+                        image.pixels[y, x] = c;
+                    }
                 }
             }
         }
