@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace GURT
 {
@@ -7,14 +7,25 @@ namespace GURT
     {
         public List<ISceneObject> sceneObjects = new List<ISceneObject>();
 
-        public void RenderImage(int width, int height)
+        public void RenderImage(Camera camera, Image image)
         {
-            throw new NotImplementedException();
-        }
+            const float near = 1f;
+            const float far = 1000f;
+            float aspect = (float)image.width / (float)image.height;
+            // TODO - FIXME!
+            Matrix4x4 xform = Matrix4x4.CreatePerspectiveFieldOfView(camera.fov, aspect, near, far);
+            Vector2 size = new Vector2(image.width - 1, image.height - 1);
 
-        public void WriteImage(string filename)
-        {
-            throw new NotImplementedException();
+            for (int v = 0; v < image.height; v++)
+            {
+                for (int h = 0; h < image.width; h++)
+                {
+                    Vector3 uvw = new Vector3(h / size.X - 0.5f, v / size.Y - 0.5f, near);
+                    uvw = Vector3.Transform(uvw, xform);
+                    Vector3 screenPoint = camera.position + uvw;
+                    var ray = Ray.FromLine(camera.position, screenPoint);
+                }
+            }
         }
     }
 }

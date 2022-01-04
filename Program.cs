@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace GURT
 {
@@ -8,9 +9,12 @@ namespace GURT
         {
             Console.WriteLine("Hello World! I'm GURT. I trace rays to make pretty pictures.");
             ParseArgs(args);
-            var rt = new RayTracer();
-            rt.RenderImage(imageWidth, imageHeight);
-            rt.WriteImage(imageFilename);
+            var image = new Image { width = imageWidth, height = imageHeight };
+            var camera = new Camera(Vector3.One * 5f, Vector3.Zero);
+            var tracer = new RayTracer();
+            tracer.sceneObjects.Add(new Elipsoid { center = Vector3.Zero, radii = Vector3.One, material = new Material()  });
+            tracer.RenderImage(camera, image);
+            image.WriteToFile(imageFilename);
         }
 
         // Parsed arguments

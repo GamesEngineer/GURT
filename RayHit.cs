@@ -2,7 +2,7 @@
 
 namespace GURT
 {
-    public class RayHit
+    public struct RayHit
     {
         public Vector3 point;
         public Vector3 normal;
