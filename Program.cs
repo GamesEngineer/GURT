@@ -1,6 +1,6 @@
 ﻿using System;
+using System.IO;
 using System.Numerics;
-using System.Drawing;
 
 namespace GURT
 {
@@ -8,37 +8,16 @@ namespace GURT
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World! I'm GURT. I trace rays to make pretty pictures.");
+            Console.WriteLine("Hello, I'm GURT.");
+            Console.WriteLine("I trace rays to make pretty pictures.");
             ParseArgs(args);
             var image = new Image(imageWidth, imageHeight);
             var camera = new Camera(Vector3.UnitZ * -5f, Vector3.Zero);
             var tracer = new RayTracer();
-            // TODO - remove test objects and lights
-            tracer.sceneObjects.Add(new Elipsoid
-            {
-                center = Vector3.Zero,
-                radii = Vector3.One, 
-                material = new Material 
-                {
-                    baseColor = Color.Cyan,
-                    emissionColor = Color.Brown,
-                }
-            });
-            
-            tracer.sceneObjects.Add(new Elipsoid
-            {
-                center = Vector3.UnitY,
-                radii = Vector3.One * 0.5f,
-                material = new Material
-                {
-                    baseColor = Color.Cyan,
-                    emissionColor = Color.Brown,
-                }
-            });
-            
-            tracer.lights.Add(new PointLight { center = (Vector3.UnitX + Vector3.UnitY) * 5f, color = Color.White });
+            BuildTestScene(tracer);
             tracer.RenderImage(camera, image);
             image.WriteToFile(imageFilename);
+            Console.WriteLine($"Image written to {Path.GetFullPath(imageFilename)}");
         }
 
         // Parsed arguments
@@ -77,6 +56,60 @@ namespace GURT
                     Console.WriteLine($"Ignoring unexpected argument: `{arg}`");
                 }
             }
+        }
+
+        private static void BuildTestScene(RayTracer tracer)
+        {
+            tracer.lights.Add(new PointLight
+            {
+                center = (Vector3.UnitX + Vector3.UnitY + Vector3.UnitZ) * 5f,
+                color = Color.White,
+                intensity = 50f
+            });
+
+            tracer.sceneObjects.Add(new Elipsoid
+            {
+                center = Vector3.Zero,
+                radii = Vector3.One,
+                material = new Material
+                {
+                    baseColor = Color.White,
+                    emissionColor = Color.Black,
+                }
+            });
+
+            tracer.sceneObjects.Add(new Elipsoid
+            {
+                center = Vector3.UnitY,
+                radii = Vector3.One * 0.5f,
+                material = new Material
+                {
+                    baseColor = Color.Magenta * 0.5f,
+                    emissionColor = Color.Black,
+                }
+            });
+
+            tracer.sceneObjects.Add(new Elipsoid
+            {
+                center = Vector3.UnitX,
+                radii = Vector3.One * 0.5f,
+                material = new Material
+                {
+                    baseColor = Color.Yellow,
+                    emissionColor = Color.Black,
+                }
+            });
+
+            tracer.sceneObjects.Add(new Elipsoid
+            {
+                center = Vector3.UnitX * -2f,
+                radii = Vector3.One * 0.5f,
+                material = new Material
+                {
+                    baseColor = Color.Yellow,
+                    emissionColor = Color.Red * 0.1f,
+                }
+            });
         }
     }
 }

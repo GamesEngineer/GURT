@@ -1,25 +1,39 @@
-﻿using System;
-using System.Drawing;
+﻿//#define ENABLE_SHADOWS
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace GURT
 {
-    class PointLight : ILight
+    public class PointLight : ILight
     {
         public Vector3 center;
         public Color color = Color.White;
+        public float intensity = 100f;
 
-        public Color Sample(Vector3 point, out Vector3 pointToLight)
+        public Color Sample(Vector3 point, List<ISceneObject> sceneObjects, out Vector3 pointToLight)
         {
             pointToLight = center - point;
+#if ENABLE_SHADOWS
+            // Check for scene objects blocking the light
+            var lightRay = new Ray
+            {
+                origin = point,
+                direction = Vector3.Normalize(pointToLight),
+            };
+            // HACK - nudge the ray's origin so that the object won't immediately shadow itself
+            lightRay.MoveOrigin(0.001f);
+            foreach (var so in sceneObjects)
+            {
+                if (so.Hit(lightRay, out RayHit hit))
+                {
+                    return Color.Black; // Point is shadowed
+                }
+            }
+#endif
+            // Compute the amount of light reaching the point
             float d2 = Vector3.Dot(pointToLight, pointToLight);
-            float lux = 1f / (d2 + 1f); // HACK - prevent divide by zero and attenuate blowout
-            float red = Remap255(color.R * lux);
-            float green = Remap255(color.G * lux);
-            float blue = Remap255(color.B * lux);
-            return Color.FromArgb((int)red, (int)green, (int)blue);
+            float lux = intensity / (d2 + 1f); // HACK - prevent divide by zero and attenuate blowout
+            return color * lux;
         }
-
-        private static float Remap255(float x) => MathF.Max(0f, MathF.Min(x, 1f)) * 255f;
     }
 }

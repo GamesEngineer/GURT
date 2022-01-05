@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Drawing;
 
 namespace GURT
 {
@@ -8,7 +7,7 @@ namespace GURT
     {
         public int width;
         public int height;
-        public Color[,] pixels; 
+        public Color[,] pixels;
 
         public Image(int width, int height)
         {
@@ -47,18 +46,20 @@ namespace GURT
                 imageHeader[10] = (byte)(height >> 16);
                 imageHeader[11] = (byte)(height >> 24);
 
+                float MAX_VALUE = MathF.BitDecrement(256f);
                 using (var writer = new BinaryWriter(File.Open(filename, FileMode.OpenOrCreate)))
                 {
                     writer.Write(fileHeader);
                     writer.Write(imageHeader);
-                    for (int y = 0; y < height; y++)
+                    for (int y = height - 1; y > 0; y--)
                     {
                         for (int x = 0; x < width; x++)
                         {
-                            Color c = pixels[y, x];
-                            writer.Write(c.B);
-                            writer.Write(c.G);
-                            writer.Write(c.R);
+                            Color c = pixels[y, x].Clamp01;
+                            c.ApplyGammaCorrection(0.45f);
+                            writer.Write((byte)(c.B * MAX_VALUE));
+                            writer.Write((byte)(c.G * MAX_VALUE));
+                            writer.Write((byte)(c.R * MAX_VALUE));
                         }
                     }
                 }
