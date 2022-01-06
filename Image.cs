@@ -8,12 +8,30 @@ namespace GURT
         public int width;
         public int height;
         public Color[,] pixels;
+        public float aspectRatio;
+        public float gamma = 2.2f;
 
         public Image(int width, int height)
         {
             this.width = width;
             this.height = height;
             this.pixels = new Color[height, width];
+            this.aspectRatio = (float)width / (float)height;
+        }
+
+        // Create a Red-Green gradient test image
+        public void MakeTestImage()
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    float red = (float)x / (float)(width - 1);
+                    float green = (float)y / (float)(height - 1);
+                    Color color = new() { R = red, G = green, B = 0, A = 1 };
+                    pixels[y, x] = color;
+                }
+            }
         }
 
         public void WriteToFile(string filename)
@@ -47,16 +65,18 @@ namespace GURT
                 imageHeader[11] = (byte)(height >> 24);
 
                 float MAX_VALUE = MathF.BitDecrement(256f);
+                float invGamma = 1f / gamma;
                 using (var writer = new BinaryWriter(File.Open(filename, FileMode.OpenOrCreate)))
                 {
                     writer.Write(fileHeader);
                     writer.Write(imageHeader);
-                    for (int y = height - 1; y > 0; y--)
+                    for (int y = 0; y < height; y++)
                     {
                         for (int x = 0; x < width; x++)
                         {
-                            Color c = pixels[y, x].Clamp01;
-                            c.ApplyGammaCorrection(0.45f);
+                            Color c = pixels[y, x];
+                            c.ApplyGammaCorrection(invGamma);
+                            c = c.Clamp01;
                             writer.Write((byte)(c.B * MAX_VALUE));
                             writer.Write((byte)(c.G * MAX_VALUE));
                             writer.Write((byte)(c.R * MAX_VALUE));

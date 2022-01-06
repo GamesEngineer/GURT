@@ -2,10 +2,11 @@
 
 namespace GURT
 {
-    public struct RayHit
+    public class RayHit
     {
-        public Vector3 point;
-        public Vector3 normal;
-        public float distance;
+        public Vector3 point = Vector3.Zero;
+        public Vector3 normal = Vector3.UnitX;
+        public float distance = float.PositiveInfinity;
+        public ISceneObject sceneObject = null;
     }
 }

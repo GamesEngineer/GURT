@@ -1,4 +1,4 @@
-﻿//#define ENABLE_SHADOWS
+﻿#define ENABLE_SHADOWS
 using System.Collections.Generic;
 using System.Numerics;
 
