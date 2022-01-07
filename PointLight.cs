@@ -22,18 +22,23 @@ namespace GURT
             };
             // HACK - nudge the ray's origin so that the object won't immediately shadow itself
             lightRay.NudgeForward();
+            float transmission = 1f;
             foreach (var so in sceneObjects)
             {
                 if (so.Hit(lightRay, out RayHit hit))
                 {
-                    return Color.Black; // Point is shadowed
+                    transmission *= (1f - hit.sceneObject.Material.baseColor.A);
+                    if (transmission < 0.001f)
+                    {
+                        return Color.Black; // Point is completely shadowed
+                    }
                 }
             }
 #endif
             // Compute the amount of light reaching the point
             float d2 = Vector3.Dot(pointToLight, pointToLight);
             float lux = intensity / (d2 + 1f); // HACK - prevent divide by zero and attenuate blowout
-            return color * lux;
+            return color * lux * transmission;
         }
     }
 }

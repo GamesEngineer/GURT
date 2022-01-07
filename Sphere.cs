@@ -29,7 +29,8 @@ namespace GURT
             }
             h = MathF.Sqrt(h);
             hit.distance = -b - h;
-            if (hit.distance < 0f)
+            bool isInside = hit.distance < 0f;
+            if (isInside)
             {
                 hit.distance = -b + h;
                 if (hit.distance < 0f) return false;
@@ -54,6 +55,7 @@ namespace GURT
 #endif
             hit.point = ray.GetPoint(hit.distance);
             hit.normal = Vector3.Normalize(hit.point - center);
+            if (isInside) hit.normal = Vector3.Negate(hit.normal);
             hit.sceneObject = this;
             return true;
         }
