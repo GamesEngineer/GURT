@@ -16,13 +16,16 @@ namespace GURT
         public static readonly Color SkyColor = Color.Cyan * 0.05f;
         public static readonly Color GroundColor = Color.Yellow * 0.005f;
 
-        public Color Shade(RayHit hit, List<ILight> lights, List<ISceneObject> sceneObjects)
+        public Color Shade(RayHit hit, List<ILight> lights, List<ISceneObject> sceneObjects, Vector3 viewDir)
         {
             // TODO handle translucency and reflections
+            Color totalLight = emissionColor;
 
-            // Start with ambient light from sky and ground
-            Color totalLight = Color.Lerp(GroundColor, SkyColor, MathF.Pow((hit.normal.Y + 1f) / 2f, 2f));
+            // Ambient light from sky and ground
+            Color ambientLight = baseColor * Color.Lerp(GroundColor, SkyColor, MathF.Pow((hit.normal.Y + 1f) / 2f, 2f));
 
+            Color metallic = Color.White * (1f - metallicity) + baseColor * metallicity;
+#if true
             // Add contributions from each light source
             foreach (var lightSource in lights)
             {
@@ -31,10 +34,19 @@ namespace GURT
                 Vector3 dirToLight = Vector3.Normalize(pointToLight);
                 float diffusion = Vector3.Dot(dirToLight, hit.normal); // Lambertian reflection
                 if (diffusion <= 0f) continue; // handle self shadowing
-                totalLight += light * diffusion;
+                float specular = Specular(viewDir, dirToLight, hit.normal);
+                totalLight += light * baseColor * diffusion + light * specular * metallic;
             }
-
-            return emissionColor + baseColor * totalLight;
+#endif
+            return emissionColor + ambientLight + totalLight;
         }
+
+        public float Specular(Vector3 V, Vector3 L, Vector3 N)
+        {
+            Vector3 R = Vector3.Normalize(2f * Vector3.Dot(N, -L) * N + L);
+            return MathF.Pow(Clamp01(Vector3.Dot(R, Vector3.Normalize(V))), specularity * 100f) * 2f;
+        }
+
+        private static float Clamp01(float x) => MathF.Max(0f, MathF.Min(x, 1f));
     }
 }

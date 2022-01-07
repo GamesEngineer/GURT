@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 namespace GURT
 {
@@ -43,7 +46,7 @@ namespace GURT
         static int imageWidth = 1280;
         static int imageHeight = 720;
         static string imageFilename = "image.bmp";
-        static string sceneFilename; // e.g., "scene.obj"
+        static string sceneFilename; // e.g., "scene.json"
         static string quality;
 
         private static void ParseArgs(string[] args)
@@ -134,6 +137,7 @@ namespace GURT
                 {
                     baseColor = Color.Red,
                     emissionColor = Color.Black,
+                    metallicity = 1f,
                 }
             });
 
@@ -169,6 +173,16 @@ namespace GURT
                     emissionColor = Color.Black,
                 }
             });
+
+            string sceneJson = JsonSerializer.Serialize(tracer.sceneObjects);
+            Console.WriteLine(sceneJson);
+        }
+
+        private static void LoadScene(RayTracer tracer)
+        {
+            if (!sceneFilename.EndsWith(".json")) throw new NotImplementedException();
+            var sceneJson = File.ReadAllText(sceneFilename);
+            tracer.sceneObjects = JsonSerializer.Deserialize<List<ISceneObject>>(sceneJson);
         }
     }
 }

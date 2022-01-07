@@ -62,7 +62,7 @@ namespace GURT
                 // TODO - handle recursive reflections and translucency
             }
             Color color = (closestHit != null) ?
-                closestHit.sceneObject.Material.Shade(closestHit, lights, sceneObjects) :
+                closestHit.sceneObject.Material.Shade(closestHit, lights, sceneObjects, ray.direction) :
                 Color.Black;
             return color;
         }
