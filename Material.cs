@@ -47,12 +47,24 @@ namespace GURT
                 Ray reflectedRay = new() { origin = hit.point, direction = R };
                 // HACK - nudge the ray's origin so that the object won't immediately reflect itself
                 reflectedRay.NudgeForward();
+                Vector3 phi = Vector3.Normalize(Vector3.Cross(reflectedRay.direction, Vector3.UnitY));
+                Vector3 psi = Vector3.Normalize(Vector3.Cross(reflectedRay.direction, phi));
+                float roughnessAngle = rng.Next() / (float)int.MaxValue * MathF.Tau;
+                float roughnessMag = rng.Next() / (float)int.MaxValue * roughness;
+                float sa = MathF.Sin(roughnessAngle);
+                float ca = MathF.Cos(roughnessAngle);
+                reflectedRay.direction += phi * sa * roughnessMag;
+                reflectedRay.direction += psi * ca * roughnessMag;
+                reflectedRay.direction = Vector3.Normalize(reflectedRay.direction);
                 Color reflection = tracer.TraceRay(reflectedRay);
                 totalLight += baseColor * reflection;
             }
 
             return emissionColor + ambientLight + totalLight;
         }
+
+        Random rng = new Random((int)DateTime.Now.Ticks);
+
 
         public float Specular(Vector3 V, Vector3 L, Vector3 N)
         {

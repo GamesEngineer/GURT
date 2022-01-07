@@ -16,7 +16,7 @@ namespace GURT
             ParseArgs(args);
 
             var image = new Image(imageWidth, imageHeight);
-            var camera = new Camera(Vector3.UnitZ * 5f, Vector3.Zero);
+            var camera = new Camera(new Vector3 { X = 0f, Y = 1f, Z = 5f }, Vector3.Zero);
             var tracer = new RayTracer();
             if (!string.IsNullOrEmpty(quality))
             {
@@ -114,9 +114,10 @@ namespace GURT
                 radius = 1f,
                 material = new Material
                 {
-                    baseColor = Color.White,
+                    baseColor = Color.White * 0.5f,
                     emissionColor = Color.Black,
                     metallicity = 1f,
+                    //roughness = 0.3f,
                 }
             });
 
@@ -126,7 +127,7 @@ namespace GURT
                 radius = 0.333f,
                 material = new Material
                 {
-                    baseColor = Color.Magenta * 0.5f,
+                    baseColor = Color.Magenta * 0.25f + Color.Gray * 0.75f,
                     emissionColor = Color.Black,
                     specularity = 0.05f,
                 }
@@ -138,7 +139,7 @@ namespace GURT
                 radius = 0.5f,
                 material = new Material
                 {
-                    baseColor = Color.Red,
+                    baseColor = Color.Red * 0.5f + Color.Gray,
                     emissionColor = Color.Black,
                     metallicity = 1f,
                 }
@@ -178,8 +179,8 @@ namespace GURT
                 }
             });
 
-            string sceneJson = JsonSerializer.Serialize(tracer.sceneObjects);
-            Console.WriteLine(sceneJson);
+            //string sceneJson = JsonSerializer.Serialize(tracer.sceneObjects);
+            //Console.WriteLine(sceneJson);
         }
 
         private static void LoadScene(RayTracer tracer)
