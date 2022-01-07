@@ -98,7 +98,7 @@ namespace GURT
             // "Ground"
             tracer.sceneObjects.Add(new Sphere
             {
-                center = Vector3.UnitY * -5001.5f,
+                position = Vector3.UnitY * -5001.5f,
                 radius = 5000f,
                 material = new Material
                 {
@@ -110,7 +110,7 @@ namespace GURT
 
             tracer.sceneObjects.Add(new Sphere
             {
-                center = Vector3.Zero,
+                position = Vector3.Zero,
                 radius = 1f,
                 material = new Material
                 {
@@ -123,19 +123,20 @@ namespace GURT
 
             tracer.sceneObjects.Add(new Sphere
             {
-                center = new Vector3 { X = -0.8f, Y = 0.85f, Z = 1f },
+                position = new Vector3 { X = -0.6667f, Y = 0.8f, Z = 1f },
                 radius = 0.333f,
                 material = new Material
                 {
                     baseColor = new Color { R = 1f, G = 1f, B = 1f, A = 0f },
                     emissionColor = Color.Black,
                     specularity = 1f,
+                    refractiveIndex = 1.3333f,
                 }
             });
 
             tracer.sceneObjects.Add(new Sphere
             {
-                center = Vector3.UnitX * 1.6667f,
+                position = Vector3.UnitX * 1.6667f,
                 radius = 0.5f,
                 material = new Material
                 {
@@ -147,7 +148,7 @@ namespace GURT
 
             tracer.sceneObjects.Add(new Sphere
             {
-                center = Vector3.UnitX * -1.6667f,
+                position = Vector3.UnitX * -1.6667f,
                 radius = 0.5f,
                 material = new Material
                 {
@@ -159,7 +160,7 @@ namespace GURT
             
             tracer.sceneObjects.Add(new Sphere
             {
-                center = Vector3.One,
+                position = Vector3.One,
                 radius = 0.20f,
                 material = new Material
                 {
@@ -170,12 +171,13 @@ namespace GURT
             
             tracer.sceneObjects.Add(new Sphere
             {
-                center = Vector3.One - Vector3.UnitY * 0.333f,
+                position = Vector3.One - Vector3.UnitY * 0.333f,
                 radius = 0.20f,
                 material = new Material
                 {
                     baseColor = new Color { R = 0.5f, G = 1, B = 0.5f, A = 0.001f },
                     emissionColor = Color.Black,
+                    refractiveIndex = 1.3333f,
                 }
             });
 

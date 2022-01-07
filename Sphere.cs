@@ -6,7 +6,7 @@ namespace GURT
 {
     public class Sphere : ISceneObject
     {
-        public Vector3 center;
+        public Vector3 position;
         public float radius;
         public Material material;
 
@@ -18,7 +18,7 @@ namespace GURT
             // Solve quadratic equation to find instersection of ray with elipsoid
 #if OPTIMIZE_QUADRATIC_SOLUTION
             // https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
-            Vector3 start = ray.origin - center;
+            Vector3 start = ray.origin - position;
             float b = Vector3.Dot(start, ray.direction);
             float c = Vector3.Dot(start, start) - radius * radius;
             float h = b * b - c;
@@ -46,6 +46,7 @@ namespace GURT
                 //no intersection
                 return false;
             }
+            bool isInside = t0 < 0f;
             if (t0 < 0f)
             {
                 t0 = t1;
@@ -54,7 +55,7 @@ namespace GURT
             hit.distance = t0;
 #endif
             hit.point = ray.GetPoint(hit.distance);
-            hit.normal = Vector3.Normalize(hit.point - center);
+            hit.normal = Vector3.Normalize(hit.point - position);
             if (isInside) hit.normal = Vector3.Negate(hit.normal);
             hit.sceneObject = this;
             return true;

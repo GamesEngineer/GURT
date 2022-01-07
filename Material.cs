@@ -8,7 +8,7 @@ namespace GURT
     {
         public Color baseColor = Color.Gray; // alpha is translucency
         public Color emissionColor = Color.Black; // alpha is strength of emission
-        public float indexOfRefraction = 1f;
+        public float refractiveIndex = 1f;
         public float metallicity = 0f; // 0 = non-metallic, 1 = metallic
         public float specularity = 0.8f; // specular reflection
         public float roughness = 0f; // microfacet roughness (for both diffuse and specular reflections)
@@ -27,7 +27,7 @@ namespace GURT
             if (baseColor.A < 1f)
             {
                 float cosTheta = Vector3.Dot(-roughNormal, viewDir);
-                float r = cosTheta > 0f ? 0.8f : 1f / 0.8f; // TODO - get ratio of indices of refacation
+                float r = cosTheta > 0f ? 1f / refractiveIndex : refractiveIndex; // TODO - get ratio of indices of refacation
                 float q = 1f - r * r * (1f - cosTheta * cosTheta);
                 if (q >= 0f)
                 {
