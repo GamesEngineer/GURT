@@ -15,5 +15,7 @@ namespace GURT
         public Vector3 GetPoint(float t) => origin + direction * t;
 
         public void MoveOrigin(float amount) => origin += direction * amount;
+
+        public void NudgeForward() => MoveOrigin(0.005f);
     }
 }

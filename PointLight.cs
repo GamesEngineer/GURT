@@ -21,7 +21,7 @@ namespace GURT
                 direction = Vector3.Normalize(pointToLight),
             };
             // HACK - nudge the ray's origin so that the object won't immediately shadow itself
-            lightRay.MoveOrigin(0.001f);
+            lightRay.NudgeForward();
             foreach (var so in sceneObjects)
             {
                 if (so.Hit(lightRay, out RayHit hit))

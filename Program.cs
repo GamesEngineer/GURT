@@ -98,12 +98,13 @@ namespace GURT
             // "Ground"
             tracer.sceneObjects.Add(new Sphere
             {
-                center = Vector3.UnitY * -5002f,
+                center = Vector3.UnitY * -5001.5f,
                 radius = 5000f,
                 material = new Material
                 {
-                    baseColor = Color.Yellow * 0.1f,
+                    baseColor = Material.GroundColor * 20f,
                     emissionColor = Color.Black,
+                    specularity = 0f,
                 }
             });
 
@@ -115,6 +116,7 @@ namespace GURT
                 {
                     baseColor = Color.White,
                     emissionColor = Color.Black,
+                    metallicity = 1f,
                 }
             });
 
@@ -126,6 +128,7 @@ namespace GURT
                 {
                     baseColor = Color.Magenta * 0.5f,
                     emissionColor = Color.Black,
+                    specularity = 0.05f,
                 }
             });
 
@@ -149,13 +152,14 @@ namespace GURT
                 {
                     baseColor = Color.Yellow,
                     emissionColor = Color.Red * 0.1f,
+                    specularity = 0f,
                 }
             });
             
             tracer.sceneObjects.Add(new Sphere
             {
                 center = Vector3.One,
-                radius = 0.15f,
+                radius = 0.20f,
                 material = new Material
                 {
                     baseColor = Color.Blue,
@@ -165,8 +169,8 @@ namespace GURT
             
             tracer.sceneObjects.Add(new Sphere
             {
-                center = Vector3.One - Vector3.UnitY * 0.25f,
-                radius = 0.15f,
+                center = Vector3.One - Vector3.UnitY * 0.333f,
+                radius = 0.20f,
                 material = new Material
                 {
                     baseColor = Color.Green,

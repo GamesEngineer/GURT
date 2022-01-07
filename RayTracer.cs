@@ -9,6 +9,7 @@ namespace GURT
         public List<ILight> lights = new();
         public enum Quality { Fast = 1, Good = 4, Great = 8 }
         public Quality quality = Quality.Fast;
+        public int recursionDepth = 0;
 
         public void RenderImage(Camera camera, Image outputImage)
         {
@@ -32,7 +33,8 @@ namespace GURT
                 for (float b = halfStep; b < 1f; b += stepSize)
                 {
                     Vector3 screenPoint = MakePointOnScreen(x + a, y + b, camera, outputImage);
-                    Color rayColor = TraceRay(camera, screenPoint);
+                    var ray = Ray.CreateFromLine(camera.positionWS, screenPoint);
+                    Color rayColor = TraceRay(ray);
                     pixelColor += rayColor;
                 }
             }
@@ -50,20 +52,24 @@ namespace GURT
             return screenPoint;
         }
         
-        private Color TraceRay(Camera camera, Vector3 screenPoint)
+        public Color TraceRay(Ray ray)
         {
-            var ray = Ray.CreateFromLine(camera.positionWS, screenPoint);
+            if (recursionDepth > 8) return Color.Black;
+            recursionDepth++;
+
             RayHit closestHit = null;
             foreach (var so in sceneObjects)
             {
                 if (!so.Hit(ray, out RayHit hit)) continue;
                 if (closestHit != null && hit.distance > closestHit.distance) continue;
                 closestHit = hit;
-                // TODO - handle recursive reflections and translucency
             }
             Color color = (closestHit != null) ?
-                closestHit.sceneObject.Material.Shade(closestHit, lights, sceneObjects, ray.direction) :
-                Color.Black;
+                closestHit.sceneObject.Material.Shade(closestHit, ray.direction, this) :
+                Material.Ambient(ray.direction);
+
+            recursionDepth--;
+
             return color;
         }
     }
