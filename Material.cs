@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace GURT
@@ -8,10 +7,10 @@ namespace GURT
     {
         public Color baseColor = Color.Gray; // alpha is translucency
         public Color emissionColor = Color.Black; // alpha is strength of emission
-        public float refractiveIndex = 1f;
-        public float metallicity = 0f; // 0 = non-metallic, 1 = metallic
-        public float specularity = 0.8f; // specular reflection
-        public float roughness = 0f; // microfacet roughness (for both diffuse and specular reflections)
+        public float refractiveIndex = 1f; // air = 1, water = 1.3333, glass = 1.52, diamond = 2.42
+        public float metallicity = 0f; // 0 = dialectric, 1 = metallic
+        public float specularity = 0f; // strength of specular reflections
+        public float roughness = 0.5f; // microfacet roughness (for both diffuse and specular reflections)
 
         public static readonly Color SkyColor = Color.Cyan * 0.05f;
         public static readonly Color GroundColor = Color.Yellow * 0.005f;
@@ -26,6 +25,7 @@ namespace GURT
 
             if (baseColor.A < 1f)
             {
+                // Handle Translucency
                 float cosTheta = Vector3.Dot(-roughNormal, viewDir);
                 float r = cosTheta > 0f ? 1f / refractiveIndex : refractiveIndex; // TODO - get ratio of indices of refacation
                 float q = 1f - r * r * (1f - cosTheta * cosTheta);
@@ -36,14 +36,23 @@ namespace GURT
                     Ray transmissionDir = new() { origin = hit.point, direction = T };
                     // HACK - nudge the ray's origin so that the object won't immediately hit the same surface
                     transmissionDir.NudgeForward();
-                    totalLight += tracer.TraceRay(transmissionDir) * (1f - baseColor.A);
+                    totalLight += tracer.TraceRay(transmissionDir) * baseColor * (1f - baseColor.A);
                 }
+#if false
+                else 
+                {
+                    // Total internal reflection
+                    Vector3 R = Reflection(hit.normal, viewDir);
+                    Ray reflectedRay = new() { origin = hit.point, direction = R };
+                    // HACK - nudge the ray's origin so that the object won't immediately reflect itself
+                    reflectedRay.NudgeForward();
+                    totalLight += tracer.TraceRay(reflectedRay) * baseColor * (1f - baseColor.A);
+                }
+#endif
             }
 
             // Ambient light from sky and ground
-            Color ambientLight = baseColor * Ambient(hit.normal) * (1f - metallicity) * baseColor.A;
-
-            Color metallic = Color.White * (1f - metallicity) + baseColor * metallicity;
+            Color ambientLight = Ambient(hit.normal) * (1f - specularity) * baseColor * baseColor.A;
 
             // Add contributions from each light source
             foreach (var lightSource in tracer.lights)
@@ -53,18 +62,21 @@ namespace GURT
                 Vector3 dirToLight = Vector3.Normalize(pointToLight);
                 float diffusion = Vector3.Dot(dirToLight, hit.normal); // Lambertian reflection
                 if (diffusion <= 0f) continue; // handle self shadowing
-                float specular = Specular(viewDir, dirToLight, roughNormal);
-                totalLight += light * baseColor * diffusion * (1f - metallicity) * baseColor.A + light * specular * metallic;
+                totalLight += light * diffusion * (1f - specularity) * baseColor * baseColor.A;
+                // HACK - create specular glints for point/spot lights
+                if (specularity <= 0f) continue;
+                float specularGlint = SpecularGlint(viewDir, dirToLight, roughNormal);
+                totalLight += light * specularGlint * Color.Lerp(Color.White, baseColor, metallicity);
             }
 
-            if (metallicity > 0f)
+            if (specularity > 0f)
             {
                 Vector3 R = Reflection(roughNormal, viewDir);
                 Ray reflectedRay = new() { origin = hit.point, direction = R };
                 // HACK - nudge the ray's origin so that the object won't immediately reflect itself
                 reflectedRay.NudgeForward();
                 Color reflection = tracer.TraceRay(reflectedRay);
-                totalLight += baseColor * reflection * baseColor.A;
+                totalLight += reflection * specularity * Color.Lerp(Color.White, baseColor, metallicity);
             }
 
             return emissionColor + ambientLight + totalLight;
@@ -72,11 +84,10 @@ namespace GURT
 
         Random rng = new Random((int)DateTime.Now.Ticks);
 
-        public float Specular(Vector3 V, Vector3 L, Vector3 N)
+        public float SpecularGlint(Vector3 V, Vector3 L, Vector3 N)
         {
-            if (specularity < 0.01f) return 0f;
             Vector3 R = Reflection(N, L);
-            return MathF.Pow(Clamp01(Vector3.Dot(R, Vector3.Normalize(V))), specularity * 100f);
+            return MathF.Pow(Clamp01(Vector3.Dot(R, Vector3.Normalize(V))), (1f - roughness) * 1000f);
         }
 
         private static Vector3 Reflection(Vector3 N, Vector3 V) => Vector3.Normalize(2f * Vector3.Dot(N, -V) * N + V);

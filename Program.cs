@@ -104,7 +104,9 @@ namespace GURT
                 {
                     baseColor = Material.GroundColor * 20f,
                     emissionColor = Color.Black,
+                    roughness = 1f,
                     specularity = 0f,
+                    metallicity = 0f,
                 }
             });
 
@@ -114,10 +116,11 @@ namespace GURT
                 radius = 1f,
                 material = new Material
                 {
-                    baseColor = Color.White * 0.5f,
+                    baseColor = new Color { R = 1f, G = 1f, B = 1f, A = 1f },
                     emissionColor = Color.Black,
-                    metallicity = 1f,
-                    //roughness = 0.3f,
+                    roughness = 0f,
+                    specularity = 1f,
+                    metallicity = 0f,
                 }
             });
 
@@ -127,10 +130,11 @@ namespace GURT
                 radius = 0.333f,
                 material = new Material
                 {
-                    baseColor = new Color { R = 1f, G = 1f, B = 1f, A = 0f },
+                    baseColor = new Color { R = 1f, G = 0.5f, B = 1f, A = 1f },
                     emissionColor = Color.Black,
-                    specularity = 1f,
-                    refractiveIndex = 1.3333f,
+                    specularity = 0f,
+                    roughness = 1f,
+                    metallicity = 0f,
                 }
             });
 
@@ -140,9 +144,11 @@ namespace GURT
                 radius = 0.5f,
                 material = new Material
                 {
-                    baseColor = Color.Red * 0.5f + Color.Gray,
+                    baseColor = new Color { R = 0.8f, G = 0.05f, B = 0.05f, A = 1f },
                     emissionColor = Color.Black,
                     metallicity = 1f,
+                    specularity = 1f,
+                    roughness = 0.07f,
                 }
             });
 
@@ -155,6 +161,7 @@ namespace GURT
                     baseColor = Color.Yellow,
                     emissionColor = Color.Red * 0.1f,
                     specularity = 0f,
+                    roughness = 0.8f,
                 }
             });
             
@@ -166,6 +173,9 @@ namespace GURT
                 {
                     baseColor = Color.Blue,
                     emissionColor = Color.Black,
+                    specularity = 0.1f,
+                    roughness = 0.05f,
+                    metallicity = 0f,
                 }
             });
             
@@ -175,9 +185,27 @@ namespace GURT
                 radius = 0.20f,
                 material = new Material
                 {
-                    baseColor = new Color { R = 0.5f, G = 1, B = 0.5f, A = 0.001f },
+                    baseColor = new Color { R = 0.15f, G = 1, B = 0.15f, A = 0.001f },
                     emissionColor = Color.Black,
                     refractiveIndex = 1.3333f,
+                    specularity = 0.001f,
+                    roughness = 0f,
+                    metallicity = 0f,
+                }
+            });
+            
+            tracer.sceneObjects.Add(new Sphere
+            {
+                position = new Vector3 { X = -1f, Y = -0.25f, Z = 0.8f },
+                radius = 0.333f,
+                material = new Material
+                {
+                    baseColor = new Color { R = 1f, G = 1, B = 1f, A = 0.001f },
+                    emissionColor = Color.Black,
+                    refractiveIndex = 2f,
+                    specularity = 0.001f,
+                    roughness = 0.1f,
+                    metallicity = 0f,
                 }
             });
 
