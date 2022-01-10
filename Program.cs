@@ -209,6 +209,20 @@ namespace GURT
                 }
             });
 
+            tracer.sceneObjects.Add(new Sphere
+            {
+                position = new Vector3 { X = 1f, Y = -0.25f, Z = 0.8f },
+                radius = 0.333f,
+                material = new Material
+                {
+                    baseColor = Color.Gray,
+                    emissionColor = Color.Black,
+                    specularity = 0.3f,
+                    roughness = 0.2f,
+                    metallicity = 0f,
+                }
+            });
+
             //string sceneJson = JsonSerializer.Serialize(tracer.sceneObjects);
             //Console.WriteLine(sceneJson);
         }

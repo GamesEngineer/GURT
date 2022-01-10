@@ -10,7 +10,7 @@ namespace GURT
         public float refractiveIndex = 1f; // air = 1, water = 1.3333, glass = 1.52, diamond = 2.42
         public float metallicity = 0f; // 0 = dialectric, 1 = metallic
         public float specularity = 0f; // strength of specular reflections
-        public float roughness = 0.5f; // microfacet roughness (for both diffuse and specular reflections)
+        public float roughness = 0.5f; // microfacet roughness (affects reflection and transmission)
 
         public static readonly Color SkyColor = Color.Cyan * 0.05f;
         public static readonly Color GroundColor = Color.Yellow * 0.005f;
