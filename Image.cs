@@ -36,7 +36,10 @@ namespace GURT
 
         public void WriteToFile(string filename)
         {
-            if (!filename.ToLower().EndsWith(".bmp")) throw new NotImplementedException();
+            if (!filename.ToLower().EndsWith(".bmp"))
+            {
+                throw new ArgumentException($"unsupported file type: {filename}", nameof(filename));
+            }
 
             // https://en.wikipedia.org/wiki/BMP_file_format
             // http://www.ece.ualberta.ca/~elliott/ee552/studentAppNotes/2003_w/misc/bmp_file_format/bmp_file_format.htm
