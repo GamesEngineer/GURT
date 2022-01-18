@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace GURT
 {
@@ -34,7 +35,9 @@ namespace GURT
             }
             else
             {
+                var timer = Stopwatch.StartNew();
                 tracer.RenderImage(camera, image);
+                Console.WriteLine($"Rendering took {timer.Elapsed.TotalSeconds} seconds");
                 image.gamma = 2.2f;
             }
 
@@ -90,7 +93,7 @@ namespace GURT
         {
             tracer.lights.Add(new PointLight
             {
-                center = Vector3.One * 15f,
+                position = Vector3.One * 15f,
                 color = Color.White,
                 intensity = 500f,
             });
@@ -102,28 +105,24 @@ namespace GURT
                 radius = 5000f,
                 material = new Material
                 {
-                    baseColor = Material.GroundColor * 20f,
-                    emissionColor = Color.Black,
-                    roughness = 1f,
-                    specularity = 0f,
-                    metallicity = 0f,
+                    baseColor = Material.GroundColor * 2f,
                 }
             });
 
+            // Mirror ball
             tracer.sceneObjects.Add(new Sphere
             {
                 position = Vector3.Zero,
                 radius = 1f,
                 material = new Material
                 {
-                    baseColor = new Color { R = 1f, G = 1f, B = 1f, A = 1f },
-                    emissionColor = Color.Black,
-                    roughness = 0f,
+                    baseColor = new Color { R = 0.7f, G = 0.7f, B = 0.7f, A = 1f },
                     specularity = 1f,
-                    metallicity = 0f,
+                    roughness = 0f,
                 }
             });
 
+            // Rough lavender ball
             tracer.sceneObjects.Add(new Sphere
             {
                 position = new Vector3 { X = -0.6667f, Y = 0.8f, Z = 1f },
@@ -131,13 +130,10 @@ namespace GURT
                 material = new Material
                 {
                     baseColor = new Color { R = 1f, G = 0.5f, B = 1f, A = 1f },
-                    emissionColor = Color.Black,
-                    specularity = 0f,
-                    roughness = 1f,
-                    metallicity = 0f,
                 }
             });
 
+            // Red metal ball
             tracer.sceneObjects.Add(new Sphere
             {
                 position = Vector3.UnitX * 1.6667f,
@@ -145,13 +141,13 @@ namespace GURT
                 material = new Material
                 {
                     baseColor = new Color { R = 0.8f, G = 0.05f, B = 0.05f, A = 1f },
-                    emissionColor = Color.Black,
                     metallicity = 1f,
                     specularity = 1f,
                     roughness = 0.07f,
                 }
             });
 
+            // Glowing yellow ball
             tracer.sceneObjects.Add(new Sphere
             {
                 position = Vector3.UnitX * -1.6667f,
@@ -159,12 +155,12 @@ namespace GURT
                 material = new Material
                 {
                     baseColor = Color.Yellow,
-                    emissionColor = Color.Red * 0.1f,
-                    specularity = 0f,
+                    emissionColor = new Color { R = 1f, G = 0f, B = 0f, A = 0.2f },
                     roughness = 0.8f,
                 }
             });
             
+            // Smooth blue ball
             tracer.sceneObjects.Add(new Sphere
             {
                 position = Vector3.One,
@@ -172,13 +168,12 @@ namespace GURT
                 material = new Material
                 {
                     baseColor = Color.Blue,
-                    emissionColor = Color.Black,
                     specularity = 0.1f,
                     roughness = 0.05f,
-                    metallicity = 0f,
                 }
             });
-            
+
+            // Green traslucent ball
             tracer.sceneObjects.Add(new Sphere
             {
                 position = Vector3.One - Vector3.UnitY * 0.333f,
@@ -186,14 +181,13 @@ namespace GURT
                 material = new Material
                 {
                     baseColor = new Color { R = 0.15f, G = 1, B = 0.15f, A = 0.001f },
-                    emissionColor = Color.Black,
                     refractiveIndex = 1.3333f,
                     specularity = 0.001f,
                     roughness = 0f,
-                    metallicity = 0f,
                 }
             });
             
+            // Rough glass ball
             tracer.sceneObjects.Add(new Sphere
             {
                 position = new Vector3 { X = -1f, Y = -0.25f, Z = 0.8f },
@@ -201,14 +195,13 @@ namespace GURT
                 material = new Material
                 {
                     baseColor = new Color { R = 1f, G = 1, B = 1f, A = 0.001f },
-                    emissionColor = Color.Black,
                     refractiveIndex = 2f,
                     specularity = 0.001f,
                     roughness = 0.1f,
-                    metallicity = 0f,
                 }
             });
 
+            // Pool que ball
             tracer.sceneObjects.Add(new Sphere
             {
                 position = new Vector3 { X = 1f, Y = -0.25f, Z = 0.8f },
@@ -216,10 +209,8 @@ namespace GURT
                 material = new Material
                 {
                     baseColor = Color.Gray,
-                    emissionColor = Color.Black,
                     specularity = 0.3f,
                     roughness = 0.2f,
-                    metallicity = 0f,
                 }
             });
 

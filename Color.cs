@@ -4,10 +4,10 @@ namespace GURT
 {
     public struct Color
     {
-        public float R;
-        public float G;
-        public float B;
-        public float A;
+        public float R; // red
+        public float G; // green
+        public float B; // blue
+        public float A; // alpha
 
         public Color Clamp01 => new Color
         {

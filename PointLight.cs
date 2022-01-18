@@ -6,13 +6,13 @@ namespace GURT
 {
     public class PointLight : ILight
     {
-        public Vector3 center;
+        public Vector3 position;
         public Color color = Color.White;
         public float intensity = 100f;
 
-        public Color Sample(Vector3 point, List<ISceneObject> sceneObjects, out Vector3 pointToLight)
+        public Color Sample(Vector3 point, List<ISceneObject> sceneObjects, ISceneObject ignore, out Vector3 pointToLight)
         {
-            pointToLight = center - point;
+            pointToLight = position - point;
 #if ENABLE_SHADOWS
             // Check for scene objects blocking the light
             var lightRay = new Ray
@@ -25,6 +25,7 @@ namespace GURT
             float transmission = 1f;
             foreach (var so in sceneObjects)
             {
+                if (so == ignore) continue;
                 if (so.Hit(lightRay, out RayHit hit))
                 {
                     transmission *= (1f - hit.sceneObject.Material.baseColor.A);

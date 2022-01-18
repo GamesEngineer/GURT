@@ -1,8 +1,11 @@
-﻿namespace GURT
+﻿using System.Numerics;
+
+namespace GURT
 {
     public interface ISceneObject
     {
-        bool Hit(Ray ray, out RayHit hit);
+        Vector3 Position { get; }
         Material Material { get; }
+        bool Hit(Ray ray, out RayHit hit);
     }
 }

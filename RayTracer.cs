@@ -66,7 +66,7 @@ namespace GURT
             }
             Color color = (closestHit != null) ?
                 closestHit.sceneObject.Material.Shade(closestHit, ray.direction, this) :
-                Material.Ambient(ray.direction);
+                Material.AmbientLightFromSkyAndGround(ray.direction);
 
             recursionDepth--;
 

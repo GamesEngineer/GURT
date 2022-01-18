@@ -36,58 +36,73 @@ namespace GURT
 
         public void WriteToFile(string filename)
         {
-            if (filename.ToLower().EndsWith(".bmp"))
+            if (!filename.ToLower().EndsWith(".bmp")) throw new NotImplementedException();
+
+            // https://en.wikipedia.org/wiki/BMP_file_format
+            // http://www.ece.ualberta.ca/~elliott/ee552/studentAppNotes/2003_w/misc/bmp_file_format/bmp_file_format.htm
+
+            int rowSize = AlignToFour(BYTES_PER_PIXEL * width); // each row of pixels must be a multiple of 4 bytes
+            int imageDataSize = rowSize * height;
+
+            // Open and write the BMP file
+            float MAX_VALUE = MathF.BitDecrement(256f);
+            float invGamma = 1f / gamma;
+            using (var writer = new BinaryWriter(File.Open(filename, FileMode.OpenOrCreate)))
             {
-                byte[] fileHeader = new byte[14]
+                WriteBmFileHeader(writer, imageDataSize);
+                WriteDibHeader(writer, width, height);
+                // write the image data, row by row
+                for (int y = 0; y < height; y++)
                 {
-                    (byte)'B', (byte)'M', 0, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0
-                };
-                byte[] imageHeader = new byte[40]
-                {
-                    40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 24, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                };
-
-                int filesize = fileHeader.Length + imageHeader.Length + 3 * width * height;
-
-                fileHeader[2] = (byte)(filesize);
-                fileHeader[3] = (byte)(filesize >> 8);
-                fileHeader[4] = (byte)(filesize >> 16);
-                fileHeader[5] = (byte)(filesize >> 24);
-
-                imageHeader[4] = (byte)(width);
-                imageHeader[5] = (byte)(width >> 8);
-                imageHeader[6] = (byte)(width >> 16);
-                imageHeader[7] = (byte)(width >> 24);
-                imageHeader[8] = (byte)(height);
-                imageHeader[9] = (byte)(height >> 8);
-                imageHeader[10] = (byte)(height >> 16);
-                imageHeader[11] = (byte)(height >> 24);
-
-                float MAX_VALUE = MathF.BitDecrement(256f);
-                float invGamma = 1f / gamma;
-                using (var writer = new BinaryWriter(File.Open(filename, FileMode.OpenOrCreate)))
-                {
-                    writer.Write(fileHeader);
-                    writer.Write(imageHeader);
-                    for (int y = 0; y < height; y++)
+                    // write a row of pixels
+                    for (int x = 0; x < width; x++)
                     {
-                        for (int x = 0; x < width; x++)
-                        {
-                            Color c = pixels[y, x];
-                            c.ApplyGammaCorrection(invGamma);
-                            c = c.Clamp01;
-                            writer.Write((byte)(c.B * MAX_VALUE));
-                            writer.Write((byte)(c.G * MAX_VALUE));
-                            writer.Write((byte)(c.R * MAX_VALUE));
-                        }
+                        Color c = pixels[y, x];
+                        c.ApplyGammaCorrection(invGamma);
+                        c = c.Clamp01;
+                        writer.Write((byte)(c.B * MAX_VALUE));
+                        writer.Write((byte)(c.G * MAX_VALUE));
+                        writer.Write((byte)(c.R * MAX_VALUE));
+                    }
+                    // add padding to ensure that each row ends on a word-aligned boundary
+                    int padding = rowSize - width * BYTES_PER_PIXEL;
+                    while (padding-- > 0)
+                    {
+                        writer.Write((byte)0);
                     }
                 }
             }
-            else
-            {
-                throw new NotImplementedException();
-            }
+        }
+
+        const int SIZEOF_BM_FILE_HEADER = 14; // bytes
+        const int SIZEOF_DIB_HEADER = 40; // bytes
+        const int BYTES_PER_PIXEL = 3; // blue, green, red
+
+        static int AlignToFour(int x) => ((x + 3) / 4) * 4;
+
+        static void WriteBmFileHeader(BinaryWriter writer, int imageDataSize)
+        {
+            int imageDataOffset = SIZEOF_BM_FILE_HEADER + SIZEOF_DIB_HEADER;
+            int fileSize = imageDataOffset + imageDataSize;
+            writer.Write((byte)'B'); writer.Write((byte)'M'); // file type signature
+            writer.Write(fileSize);
+            writer.Write(0); // application codes
+            writer.Write(imageDataOffset);
+        }
+
+        static void WriteDibHeader(BinaryWriter writer, int width, int height)
+        {
+            writer.Write(SIZEOF_DIB_HEADER); // the size also implicitly specifies which type of DIB header this is
+            writer.Write(width); // image width (# pixels)
+            writer.Write(height); // image height (# pixels) [Note: positive = "bottom up", negative = "top down"]
+            writer.Write((short)1); // # of color planes
+            writer.Write((short)(BYTES_PER_PIXEL * 8)); // bits per pixel
+            writer.Write(0); // type of compression (0 = BI_RGB no compression)
+            writer.Write(0); // size of image after compression (can be 0 when compression is BI_RGB)
+            writer.Write(0); // horizontal resolution (pixels per meter)
+            writer.Write(0); // vertical resolution (pixels per meter)
+            writer.Write(0); // # colors actually used from palette (set to 0 when using 24-bit RGB)
+            writer.Write(0); // # of important colors (0 = all)
         }
     }
 }

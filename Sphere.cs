@@ -10,18 +10,19 @@ namespace GURT
         public float radius;
         public Material material;
 
+        Vector3 ISceneObject.Position => position;
         Material ISceneObject.Material => material;
 
         bool ISceneObject.Hit(Ray ray, out RayHit hit)
         {
             hit = new RayHit();
-            // Solve quadratic equation to find instersection of ray with elipsoid
+            // Solve quadratic equation to find instersection of ray with sphere
 #if OPTIMIZE_QUADRATIC_SOLUTION
             // https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
             Vector3 start = ray.origin - position;
             float b = Vector3.Dot(start, ray.direction);
             float c = Vector3.Dot(start, start) - radius * radius;
-            float h = b * b - c;
+            float h = b * b - c; // Optimized quadratic discriminent
             if (h < 0f)
             {
                 //no intersection

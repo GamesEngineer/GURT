@@ -7,10 +7,10 @@ namespace GURT
     {
         public Vector3 positionWS;
         public Vector3 viewDirectionWS;
+        public float screenDistance;
         public float fieldOfViewHalfAngle; // degrees
         public Matrix4x4 viewMatrixW2L; // transforms world space to local space
         public Matrix4x4 viewMatrixL2W; // transforms local space to world space
-        public float screenDistance;
 
         public Camera(Vector3 positionWS, Vector3 lookAtTargetWS, float fieldOfViewAngle = 35f)
         {
