@@ -85,9 +85,11 @@ namespace GURT
                 diffuseLight += light * diffusion;
 
                 // HACK - create specular glints for point/spot lights
-                if (specularity <= 0f) continue;
-                float specularGlint = SpecularGlint(viewDir, dirToLight, roughNormal);
-                specularLight += light * specularGlint;
+                if (specularity > 0f)
+                {
+                    float specularGlint = SpecularGlint(viewDir, dirToLight, roughNormal);
+                    specularLight += light * specularGlint;
+                }
             }
 
             if (specularity > 0f)
@@ -109,7 +111,13 @@ namespace GURT
             return finalColor;
         }
 
-        Random rng = new Random((int)DateTime.Now.Ticks);
+        private static float Clamp01(float x) => MathF.Max(0f, MathF.Min(x, 1f));
+
+        private static Vector3 Reflection(Vector3 normalDir, Vector3 inVec)
+        {
+            float nDi = Vector3.Dot(normalDir, inVec);
+            return inVec - (2f * nDi) * normalDir;
+        }
 
         public float SpecularGlint(Vector3 V, Vector3 L, Vector3 N)
         {
@@ -117,9 +125,8 @@ namespace GURT
             return MathF.Pow(Clamp01(Vector3.Dot(R, Vector3.Normalize(V))), (1f - roughness) * 1000f);
         }
 
-        private static Vector3 Reflection(Vector3 N, Vector3 V) => Vector3.Normalize(2f * Vector3.Dot(N, -V) * N + V);
 
-        private static float Clamp01(float x) => MathF.Max(0f, MathF.Min(x, 1f));
+        private Random rng = new Random((int)DateTime.Now.Ticks);
 
         private Vector3 RandomlyPerturbDirection(Vector3 direction, float amount)
         {

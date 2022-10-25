@@ -13,6 +13,7 @@ namespace GURT
         public Color Sample(Vector3 point, List<ISceneObject> sceneObjects, ISceneObject ignore, out Vector3 pointToLight)
         {
             pointToLight = position - point;
+            float transmission = 1f;
 #if ENABLE_SHADOWS
             // Check for scene objects blocking the light
             var lightRay = new Ray
@@ -22,7 +23,6 @@ namespace GURT
             };
             // HACK - nudge the ray's origin so that the object won't immediately shadow itself
             lightRay.NudgeForward();
-            float transmission = 1f;
             foreach (var so in sceneObjects)
             {
                 if (so == ignore) continue;
@@ -37,8 +37,9 @@ namespace GURT
             }
 #endif
             // Compute the amount of light reaching the point
-            float d2 = Vector3.Dot(pointToLight, pointToLight);
-            float lux = intensity / (d2 + 1f); // HACK - prevent divide by zero and attenuate blowout
+            float distanceSquared = Vector3.Dot(pointToLight, pointToLight);
+            distanceSquared += 1f;// HACK - prevent divide by zero and attenuate blowout
+            float lux = intensity / distanceSquared;
             return color * lux * transmission;
         }
     }

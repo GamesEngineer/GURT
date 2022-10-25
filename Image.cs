@@ -9,7 +9,7 @@ namespace GURT
         public int height;
         public Color[,] pixels;
         public float aspectRatio;
-        public float gamma = 2.2f;
+        public float gamma = 2.0f;
 
         public Image(int width, int height)
         {

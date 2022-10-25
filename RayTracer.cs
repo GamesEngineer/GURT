@@ -46,22 +46,27 @@ namespace GURT
         private static Vector3 MakePointOnScreen(float x, float y, Camera camera, Image image)
         {
             Vector2 imageSizeMinusOne = new(image.width - 1, image.height - 1);
-            Vector3 screenPoint = new(x / imageSizeMinusOne.X - 0.5f, y / imageSizeMinusOne.Y - 0.5f, camera.screenDistance);
+            Vector3 screenPoint = new(
+                x / imageSizeMinusOne.X - 0.5f,
+                y / imageSizeMinusOne.Y - 0.5f,
+                camera.screenDistance);
             screenPoint.X *= image.aspectRatio;
             screenPoint = Vector3.Transform(screenPoint, camera.viewMatrixL2W);
             return screenPoint;
         }
-        
+
+        const int MAX_RECURSION_DEPTH = 8;
+
         public Color TraceRay(Ray ray)
         {
-            if (recursionDepth > 8) return Color.Black;
+            if (recursionDepth >= MAX_RECURSION_DEPTH) return Color.Black;
             recursionDepth++;
 
             RayHit closestHit = null;
             foreach (var so in sceneObjects)
             {
-                if (!so.Hit(ray, out RayHit hit)) continue;
-                if (closestHit != null && hit.distance > closestHit.distance) continue;
+                if (!so.Hit(ray, out RayHit hit)) continue; // Missed
+                if (closestHit != null && hit.distance > closestHit.distance) continue; // Not closer
                 closestHit = hit;
             }
             Color color = (closestHit != null) ?
