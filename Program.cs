@@ -1,10 +1,10 @@
-﻿using System;
+﻿// Game-U Ray Tracer (GURT)
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace GURT
 {
@@ -13,12 +13,12 @@ namespace GURT
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, I'm GURT.");
-            Console.WriteLine("I trace rays to make pretty pictures.");
+            Console.WriteLine("I trace light rays to make pretty pictures.");
             ParseArgs(args);
 
-            var image = new Image(imageWidth, imageHeight);
-            var camera = new Camera(new Vector3 { X = 0f, Y = 1f, Z = 5f }, Vector3.Zero);
-            var tracer = new RayTracer();
+            Image image = new (imageWidth, imageHeight);
+            Camera camera = new (new Vector3 { X = 0f, Y = 1f, Z = 5f }, Vector3.Zero);
+            RayTracer tracer = new ();
             if (!string.IsNullOrEmpty(quality))
             {
                 if (quality == "fast") tracer.quality = RayTracer.Quality.Fast;
